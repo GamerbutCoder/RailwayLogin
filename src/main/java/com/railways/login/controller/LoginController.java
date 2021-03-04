@@ -1,9 +1,14 @@
 package com.railways.login.controller;
 
 import com.railways.login.dto.LoginRequestDTO;
+import com.railways.login.dto.LoginResponseDTO;
 import com.railways.login.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 
 //@CrossOrigin
 @RestController
@@ -19,8 +24,13 @@ public class LoginController {
     }
 
     @PostMapping("")
-    public boolean doLogin(@RequestBody LoginRequestDTO req){
+    public LoginResponseDTO doLogin(@RequestBody LoginRequestDTO req, HttpServletRequest request){
+        //Cookie cookies[] = request.getCookies();
+        //System.out.println(cookies[0].getName());
         return loginService.doLogin(req);
     }
+
+
+
 
 }

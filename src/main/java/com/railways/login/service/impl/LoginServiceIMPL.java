@@ -1,6 +1,8 @@
 package com.railways.login.service.impl;
 
+import com.railways.login.client.ClientService;
 import com.railways.login.dto.LoginRequestDTO;
+import com.railways.login.dto.LoginResponseDTO;
 import com.railways.login.entity.Login;
 import com.railways.login.entity.Sessions;
 import com.railways.login.repository.LoginRepository;
@@ -23,6 +25,9 @@ public class LoginServiceIMPL implements LoginService {
     @Autowired
     private SessionRepository sessionRepository;
 
+    @Autowired
+    private ClientService clientService;
+
     @Override
     public void insertNewLogin(LoginRequestDTO requestDTO) {
         Login login = new Login();
@@ -32,17 +37,37 @@ public class LoginServiceIMPL implements LoginService {
 
     @Override
     // TODO: pass UserValidation
-    public boolean doLogin(LoginRequestDTO requestDTO) {
-
+    public LoginResponseDTO doLogin(LoginRequestDTO requestDTO) {
+        LoginResponseDTO responseDTO = new LoginResponseDTO();
         Optional<Login> optional = loginRepository.findById(requestDTO.getUserName());
         if(optional.isPresent()){
             String hashedpassword = DigestUtils.sha256Hex(requestDTO.getPassword());
-            Sessions sessions = new Sessions();
-            sessions.setUserName(CustomHash.hashString(requestDTO.getUserName()));
-            sessions.setLoggedIn(true);
-            sessionRepository.save(sessions);
-            return (optional.get().getPassword().equals(hashedpassword));
+
+            boolean ans = (optional.get().getPassword().equals(hashedpassword));
+            if(ans){
+                Sessions sessions = new Sessions();
+                String userName = CustomHash.hashString(requestDTO.getUserName());
+                Optional<Sessions> optional1 = sessionRepository.findById(userName);
+                if(optional1.isPresent()){
+                    sessionRepository.updateSessionState("true",userName);
+                }
+                else{
+                    sessions.setIsLoggedIn("true");
+                    sessions.setUserName(userName);
+                    sessionRepository.save(sessions);
+                }
+                clientService.setSessionInBookAndSearch(userName,"true");
+                responseDTO.setMessage("SUCCESS");
+                responseDTO.setUserName(requestDTO.getUserName());
+                return responseDTO;
+            }
+            else{
+                responseDTO.setMessage("FAILED");
+                responseDTO.setUserName("");
+            }
         }
-        return false;
+        responseDTO.setMessage("FAILED");
+        responseDTO.setUserName("");
+        return responseDTO;
     }
 }

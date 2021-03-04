@@ -10,6 +10,6 @@ import javax.persistence.Id;
 public class Sessions {
     @Id
     private String userName;
-    private boolean isLoggedIn;
+    private String isLoggedIn;
 
 }

@@ -1,7 +1,10 @@
 package com.railways.login.repository;
 
 import com.railways.login.entity.Sessions;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface SessionRepository extends CrudRepository<Sessions,String> {
+    @Query(value = "update sessions set is_logged_in = ?1 where user_name = ?2",nativeQuery = true)
+    void updateSessionState(String login,String username);
 }
