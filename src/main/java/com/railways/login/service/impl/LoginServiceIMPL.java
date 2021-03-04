@@ -41,7 +41,7 @@ public class LoginServiceIMPL implements LoginService {
         LoginResponseDTO responseDTO = new LoginResponseDTO();
         Optional<Login> optional = loginRepository.findById(requestDTO.getUserName());
         if(optional.isPresent()){
-            String hashedpassword = DigestUtils.sha256Hex(requestDTO.getPassword());
+            String hashedpassword = CustomHash.hashString(requestDTO.getPassword());
 
             boolean ans = (optional.get().getPassword().equals(hashedpassword));
             if(ans){
@@ -49,7 +49,12 @@ public class LoginServiceIMPL implements LoginService {
                 String userName = CustomHash.hashString(requestDTO.getUserName());
                 Optional<Sessions> optional1 = sessionRepository.findById(userName);
                 if(optional1.isPresent()){
-                    sessionRepository.updateSessionState("true",userName);
+                    try{
+                        sessionRepository.updateSessionState("true",userName);
+                    }
+                    catch (Exception e){
+                        //e.printStackTrace();
+                    }
                 }
                 else{
                     sessions.setIsLoggedIn("true");
@@ -58,7 +63,7 @@ public class LoginServiceIMPL implements LoginService {
                 }
                 clientService.setSessionInBookAndSearch(userName,"true");
                 responseDTO.setMessage("SUCCESS");
-                responseDTO.setUserName(requestDTO.getUserName());
+                responseDTO.setUserName(userName);
                 return responseDTO;
             }
             else{
