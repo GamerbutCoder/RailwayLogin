@@ -21,10 +21,10 @@ public class LogoutServiceIMPL implements LogoutService {
     @Override
     @Transactional
     public void logoutUser(LogoutRequestDTO requestDTO) {
-        Optional<Sessions> optional = sessionRepository.findById(requestDTO.getUserName());
-        if(optional.isPresent()){
+        String optional = sessionRepository.findbysessionid(requestDTO.getSessionId());
+        if(optional!=null){
             try{
-                sessionRepository.deleteSession(requestDTO.getUserName());
+                sessionRepository.deleteSession(requestDTO.getSessionId());
                 //sessionRepository.updateSessionState("false",requestDTO.getUserName());
                 //clientService.setSessionInBookAndSearch(requestDTO.getUserName(),"false");
 
@@ -34,7 +34,7 @@ public class LogoutServiceIMPL implements LogoutService {
             }
             try{
                 //clientService.setSessionInBookAndSearch(requestDTO.getUserName(),"false");
-                clientService.deleteSesssionInBookAndSearch(requestDTO.getUserName());
+                clientService.deleteSesssionInBookAndSearch(requestDTO.getSessionId());
             }
             catch (Exception e){
 

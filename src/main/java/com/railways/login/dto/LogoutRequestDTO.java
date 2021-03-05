@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class LogoutRequestDTO {
-    private String userName;
+    private String sessionId;
 }

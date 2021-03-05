@@ -9,10 +9,11 @@ import com.railways.login.repository.LoginRepository;
 import com.railways.login.repository.SessionRepository;
 import com.railways.login.service.LoginService;
 import com.railways.login.util.CustomHash;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 
 import java.util.Optional;
@@ -42,38 +43,35 @@ public class LoginServiceIMPL implements LoginService {
         Optional<Login> optional = loginRepository.findById(requestDTO.getUserName());
         if(optional.isPresent()){
             String hashedpassword = CustomHash.hashString(requestDTO.getPassword());
-
+            hashedpassword = CustomHash.hashString(hashedpassword);
             boolean ans = (optional.get().getPassword().equals(hashedpassword));
             if(ans){
                 Sessions sessions = new Sessions();
-                String userName = CustomHash.hashString(requestDTO.getUserName());
-                Optional<Sessions> optional1 = sessionRepository.findById(userName);
-                if(optional1.isPresent()){
-//                    try{
-//                        sessionRepository.updateSessionState("true",userName);
-//                    }
-//                    catch (Exception e){
-//                        //e.printStackTrace();
-                   // }
-                    //This shouldn't happen
+
+                String sessionID = requestDTO.getUserName() + java.time.LocalDate.now().toString() + java.time.LocalTime.now().toString();
+                System.out.println("jsut before hashing "+sessionID);
+                int randomNum = ThreadLocalRandom.current().nextInt(1, 6);
+                for (int i = 0; i < randomNum; i++) {
+                    sessionID = CustomHash.hashString(sessionID);
                 }
-                else{
+
+                    sessions.setSessionID(sessionID);
                     sessions.setIsLoggedIn("true");
-                    sessions.setUserName(userName);
+                    sessions.setUserName(requestDTO.getUserName());
                     sessionRepository.save(sessions);
-                }
-                clientService.setSessionInBookAndSearch(userName,"true");
+
+                clientService.setSessionInBookAndSearch(requestDTO.getUserName(),sessionID,"true");
                 responseDTO.setMessage("SUCCESS");
-                responseDTO.setUserName(userName);
+                responseDTO.setSessionID(sessionID);
                 return responseDTO;
             }
             else{
                 responseDTO.setMessage("FAILED");
-                responseDTO.setUserName("");
+                responseDTO.setSessionID("");
             }
         }
         responseDTO.setMessage("FAILED");
-        responseDTO.setUserName("");
+        responseDTO.setSessionID("");
         return responseDTO;
     }
 }
