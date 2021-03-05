@@ -11,5 +11,7 @@ public interface ClientService {
     @RequestMapping(method = RequestMethod.POST,path = "/setSession")
     void setSessionInBookAndSearch(@RequestParam("userName") String userName,@RequestParam("isLoggedIn") String isLoggedin);
 
+    @RequestMapping(method = RequestMethod.POST,path = "/deleteSession")
+    void deleteSesssionInBookAndSearch(@RequestParam("userName") String userName);
 
 }

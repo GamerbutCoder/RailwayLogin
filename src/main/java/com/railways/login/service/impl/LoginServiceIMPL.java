@@ -49,12 +49,13 @@ public class LoginServiceIMPL implements LoginService {
                 String userName = CustomHash.hashString(requestDTO.getUserName());
                 Optional<Sessions> optional1 = sessionRepository.findById(userName);
                 if(optional1.isPresent()){
-                    try{
-                        sessionRepository.updateSessionState("true",userName);
-                    }
-                    catch (Exception e){
-                        //e.printStackTrace();
-                    }
+//                    try{
+//                        sessionRepository.updateSessionState("true",userName);
+//                    }
+//                    catch (Exception e){
+//                        //e.printStackTrace();
+                   // }
+                    //This shouldn't happen
                 }
                 else{
                     sessions.setIsLoggedIn("true");
