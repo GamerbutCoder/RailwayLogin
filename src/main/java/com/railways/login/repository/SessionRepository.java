@@ -14,4 +14,7 @@ public interface SessionRepository extends CrudRepository<Sessions,String> {
     @Modifying
     @Query(value = "delete from sessions where sessionid = ?1",nativeQuery = true)
     void deleteSession(String uname);
+
+    @Query(value = "Select user_name from sessions where sessionid=?1",nativeQuery = true)
+    String findUserNameBySessionId(String sessionid);
 }
